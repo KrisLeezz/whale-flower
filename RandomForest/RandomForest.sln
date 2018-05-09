@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "RandomForest", "RandomForest\RandomForest.pyproj", "{426950D4-16FC-48F4-AE95-12DFFD9E090A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		1|Any CPU = 1|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{426950D4-16FC-48F4-AE95-12DFFD9E090A}.1|Any CPU.ActiveCfg = 1|Any CPU
+		{426950D4-16FC-48F4-AE95-12DFFD9E090A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{426950D4-16FC-48F4-AE95-12DFFD9E090A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CC5037E6-27D8-47A9-898F-9ABA497A70D8}
+	EndGlobalSection
+EndGlobal
