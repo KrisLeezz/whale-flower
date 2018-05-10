@@ -1,3 +1,4 @@
+# -*-coding: utf-8 -*-
 import csv
 import numpy
 from array import array
@@ -65,7 +66,7 @@ co=[]
 o3=[]
 date=[]
 all_x=[]
-csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/winter2.csv')
+csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/2015_2017_all_air.csv')
 csv_read=csv.reader(csv_file_read)
 
 for row in csv_read:
@@ -139,21 +140,21 @@ y_predict_hat = model_line.predict(y.reshape(-1,1))
 #csv_write.writerows(y_hat.reshape(-1,1))
 #csv_file.close()
 #绘图
-pyplot.figure(figsize=(12,6))
+pyplot.figure(figsize=(8,8))
 pyplot.plot(y.reshape(-1,1), y_hat.reshape(-1,1),'b.',label='Matching Points')
 pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'r-',label='Fitted curve',linewidth=0.6)
-pyplot.plot(y.reshape(-1,1),y.reshape(-1,1),'k--',label='1:1',linewidth=0.6)
+pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.6)
 pyplot.legend(loc=2) #指定legend的位置右下角
-pyplot.annotate("$R^2$=%.3f"%R_square,(700,0))
-pyplot.annotate("RMSE=%.3f$\mu{g/}{m}^{3}$"%RMSE,(700,30))
+pyplot.annotate("$R^2$=%.3f"%R_square,(700,100))
+pyplot.annotate("RMSE=%.3f$\mu{g/}{m}^{3}$"%RMSE,(700,50))
 
 #设置坐标轴刻度
-my_x_ticks = numpy.arange(0,1000,100)
-my_y_ticks = numpy.arange(0,1000,100)
+my_x_ticks = numpy.arange(0,1100,100)
+my_y_ticks = numpy.arange(0,1100,100)
 pyplot.xticks(my_x_ticks)
 pyplot.yticks(my_y_ticks)
-pyplot.xlim(-10,)
-pyplot.ylim(-30,)
+pyplot.xlim(0,1000)
+pyplot.ylim(0,1000)
 
 pyplot.xlabel('Observed PM2.5($\mu{g/}{m}^{3}$)')
 pyplot.ylabel('Predicted PM2.5($\mu{g/}{m}^{3}$)')
