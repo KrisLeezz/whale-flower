@@ -123,7 +123,7 @@ co=[]
 o3=[]
 date=[]
 all_x=[]
-csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/2015_2017_all_air.csv')
+csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_winter.csv')
 csv_read=csv.reader(csv_file_read)
 
 for row in csv_read:
@@ -215,7 +215,7 @@ a, b = model_line.coef_, model_line.intercept_#斜率，截距
 y_predict_hat = model_line.predict(y.reshape(-1,1))
 
 #绘图
-pyplot.figure(figsize=(8,8))
+pyplot.figure(figsize=(8,6))
 pyplot.plot(y.reshape(-1,1), y_hat.reshape(-1,1),'b.',label='Matching Points')
 pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'r-',label='Fitted curve',linewidth=0.6)
 pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.6)
@@ -250,8 +250,12 @@ for train_2, test_2 in ss.split(X,y):
     X_train_2, X_test_2, y_train_2, y_test_2 = standar_scale(X[train_2]), standar_scale(X[test_2]), y[train_2], y[test_2]
     model.fit(X_train_2,y_train_2.reshape(-1,1))
     y_test_hat_2=model.predict(X_test_2)
-    TotalRMSE_2+=sqrt(metrics.mean_squared_error(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1)))
-    R2_SUM_2+=metrics.r2_score(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1))
+    rmse_1=sqrt(metrics.mean_squared_error(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1)))
+    print rmse_1
+    TotalRMSE_2+=rmse_1
+    r_1=metrics.r2_score(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1))
+    print r_1
+    R2_SUM_2+=r_1
     #print R2_SUM_2
 print 'The second is Shufflesplit,splits=%d'%k_2  
 print 'shufflesplit MSE:',TotalRMSE_2/k_2

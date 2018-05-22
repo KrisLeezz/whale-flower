@@ -1,6 +1,6 @@
 import csv
 
-csv_2015_file=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/2017_all_air.csv','r')
+csv_2015_file=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_2017.csv','r')
 csv_2015_read=csv.reader(csv_2015_file)
 spring=[]
 summar=[]

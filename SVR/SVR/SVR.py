@@ -70,7 +70,7 @@ co=[]
 o3=[]
 date=[]
 all_x=[]
-csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/2015_2017_all_air.csv')
+csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_winter.csv')
 csv_read=csv.reader(csv_file_read)
 
 for row in csv_read:
@@ -149,7 +149,7 @@ a, b = model_line.coef_, model_line.intercept_#斜率，截距
 y_predict_hat = model_line.predict(y.reshape(-1,1))
 
 #绘图
-pyplot.figure(figsize=(8,8))
+pyplot.figure(figsize=(8,6))
 pyplot.plot(y.reshape(-1,1), y_hat.reshape(-1,1),'b.',label='Matching Points')
 pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'r-',label='Fitted curve',linewidth=0.6)
 pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.6)
