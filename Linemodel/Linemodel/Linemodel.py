@@ -66,7 +66,7 @@ co=[]
 o3=[]
 date=[]
 all_x=[]
-csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_winter.csv')
+csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_2015_2017.csv')
 csv_read=csv.reader(csv_file_read)
 
 for row in csv_read:
@@ -105,9 +105,14 @@ all_x=all_x.astype(float)
 all_x = numpy.delete(all_x, 3, axis=1)
 print all_x.shape
 
-
+#X=all_x
+#X=numpy.delete(X, 0, axis=1)
+#X=numpy.delete(X, 1, axis=1)
 X=all_x[:,2:]
-X=standar_scale(X)
+standar_scaler=preprocessing.StandardScaler()
+X_standarscale= standar_scaler.fit_transform(X)
+X=X_standarscale
+#X=standar_scale(X)
 print X.mean(axis=0)#列
 print X.std(axis=0)
 print X.shape
@@ -141,12 +146,13 @@ y_predict_hat = model_line.predict(y.reshape(-1,1))
 #csv_file.close()
 #绘图
 pyplot.figure(figsize=(8,6))
-pyplot.plot(y.reshape(-1,1), y_hat.reshape(-1,1),'b.',label='Matching Points')
-pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'r-',label='Fitted curve',linewidth=0.6)
-pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.6)
+pyplot.rc('font',family='Times New Roman') 
+pyplot.scatter(y.reshape(-1,1), y_hat.reshape(-1,1),s=25,c='',marker='.',label='Matching Points',edgecolor='r',linewidths=0.5)
+pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'b-',label='Fitted curve',linewidth=0.6)
+pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.5)
 pyplot.legend(loc=2) #指定legend的位置右下角
-pyplot.annotate("$R^2$=%.3f"%R_square,(700,100))
-pyplot.annotate("RMSE=%.3f$\mu{g/}{m}^{3}$"%RMSE,(700,50))
+pyplot.annotate("R$\mathrm{^2}$=%.2f"%R_square,(800,100))
+pyplot.annotate("RMSE=%.2f"%RMSE,(800,50))
 
 #设置坐标轴刻度
 my_x_ticks = numpy.arange(0,1100,100)
@@ -156,8 +162,8 @@ pyplot.yticks(my_y_ticks)
 pyplot.xlim(0,1000)
 pyplot.ylim(0,1000)
 
-pyplot.xlabel('Observed PM2.5($\mu{g/}{m}^{3}$)')
-pyplot.ylabel('Predicted PM2.5($\mu{g/}{m}^{3}$)')
+pyplot.xlabel('Observed PM2.5($\mathrm{\mu{g/}{m}^{3}}$)')
+pyplot.ylabel('Predicted PM2.5($\mathrm{\mu{g/}{m}^{3}}$)')
 pyplot.title('Linear')
 pyplot.show()
 print '********************************The next is validation***************************'
@@ -171,7 +177,7 @@ R2_SUM_2=0
 #n_2=0
 for train_2, test_2 in ss.split(X,y):
     #n_2+=1
-    X_train_2, X_test_2, y_train_2, y_test_2 = standar_scale(X[train_2]), standar_scale(X[test_2]), y[train_2], y[test_2]
+    X_train_2, X_test_2, y_train_2, y_test_2 = X[train_2], X[test_2], y[train_2], y[test_2]
     model.fit(X_train_2,y_train_2.reshape(-1,1))
     y_test_hat_2=model.predict(X_test_2)
     TotalRMSE_2+=sqrt(metrics.mean_squared_error(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1)))

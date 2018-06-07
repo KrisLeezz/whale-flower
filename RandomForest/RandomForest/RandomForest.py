@@ -4,6 +4,7 @@ import numpy
 from array import array
 from matplotlib import pyplot
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import make_regression
 from sklearn import preprocessing
 from sklearn import metrics
@@ -130,7 +131,12 @@ print y.shape
 model=RandomForestRegressor(n_estimators=500,min_samples_split=20)
 #model=GridSearchCV(RF,parameter,scoring='r2')
 model.fit(X,y)
-#print model.best_params_
+#print model.estimators_
+print model.feature_importances_
+print model.n_features_
+print model.n_outputs_
+#print model.decision_path(X)#内存错误
+
 
 y_hat=model.predict(X)
 #csv_file=open('result.csv','wb')
@@ -154,18 +160,30 @@ model_line.fit(y.reshape(-1,1), y_hat.reshape(-1,1))
 a, b = model_line.coef_, model_line.intercept_#斜率，截距
 y_predict_hat = model_line.predict(y.reshape(-1,1))
 
-file = open("rfmodel.pickle", "wb")
-pickle.dump(model, file)
-file.close()
+#file = open("rfmodel.pickle", "wb")
+#pickle.dump(model, file)
+#file.close()
 
+##特征重要性
+#importances=model.feature_importances_
+#fig2=pyplot.figure(figsize=(6,6))
+#pyplot.rc('font',family='Times New Roman') 
+#labels=['$x{}$'.format(i) for i in range(10)]#下标
+#pyplot.bar(numpy.arange(10),importances,align='center',color='red')
+#pyplot.xticks(numpy.arange(len(labels)),labels)
+#pyplot.title('RF')
+#pyplot.ylabel('importance')
+#title='The importance of Features'
+#pyplot.show()
 #绘图
 pyplot.figure(figsize=(8,6))
-pyplot.plot(y.reshape(-1,1), y_hat.reshape(-1,1),'b.',label='Matching Points')
-pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'r-',label='Fitted curve',linewidth=0.6)
-pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.6)
+pyplot.rc('font',family='Times New Roman') 
+pyplot.scatter(y.reshape(-1,1), y_hat.reshape(-1,1),s=25,c='',marker='.',label='Matching Points',edgecolor='r',linewidths=0.5)
+pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'b-',label='Fitted curve',linewidth=0.6)
+pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.5)
 pyplot.legend(loc=2) #指定legend的位置右下角
-pyplot.annotate("$R^2$=%.3f"%R_square,(700,100))
-pyplot.annotate("RMSE=%.3f$\mu{g/}{m}^{3}$"%RMSE,(700,50))
+pyplot.annotate("R$\mathrm{^2}$=%.2f"%R_square,(800,100))
+pyplot.annotate("RMSE=%.2f"%RMSE,(800,50))
 
 #设置坐标轴刻度
 my_x_ticks = numpy.arange(0,1100,100)
@@ -175,8 +193,8 @@ pyplot.yticks(my_y_ticks)
 pyplot.xlim(0,1000)
 pyplot.ylim(0,1000)
 
-pyplot.xlabel('Observed PM2.5($\mu{g/}{m}^{3}$)')
-pyplot.ylabel('Predicted PM2.5($\mu{g/}{m}^{3}$)')
+pyplot.xlabel('Observed PM2.5($\mathrm{\mu{g/}{m}^{3}}$)')
+pyplot.ylabel('Predicted PM2.5($\mathrm{\mu{g/}{m}^{3}}$)')
 pyplot.title('RandomForest')
 pyplot.show()
 print '********************************The next is validation***************************'
@@ -190,7 +208,7 @@ R2_SUM_2=0
 #n_2=0
 for train_2, test_2 in ss.split(X,y):
     #n_2+=1
-    X_train_2, X_test_2, y_train_2, y_test_2 = standar_scale(X[train_2]), standar_scale(X[test_2]), y[train_2], y[test_2]
+    X_train_2, X_test_2, y_train_2, y_test_2 = X[train_2], X[test_2], y[train_2], y[test_2]
     model.fit(X_train_2,y_train_2)
     y_test_hat_2=model.predict(X_test_2)
     rmse_1=sqrt(metrics.mean_squared_error(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1)))

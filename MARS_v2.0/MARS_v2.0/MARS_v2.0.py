@@ -123,7 +123,7 @@ co=[]
 o3=[]
 date=[]
 all_x=[]
-csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_winter.csv')
+csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_2015_2017.csv')
 csv_read=csv.reader(csv_file_read)
 
 for row in csv_read:
@@ -166,7 +166,10 @@ print all_x.shape
 
 X=all_x[:,2:]
 print X.shape
-X=standar_scale(X)
+#X=standar_scale(X)
+standar_scaler=preprocessing.StandardScaler()
+X_standarscale= standar_scaler.fit_transform(X)
+X=X_standarscale
 print X.mean(axis=0)#列
 print X.std(axis=0)
 #获得X的统计信息
@@ -192,11 +195,13 @@ print y.shape
 
 #MARS拟合
 #1)Fit an Earth model
-model = Earth(max_degree=2)
+criteria=('rss','gcv','nb_subsets')
+model = Earth(max_degree=2,feature_importance_type=criteria)
 model.fit(X,y) #这里用的是标准化之后的数据
 #2)Print the model模型结果
 print(model.trace())
 print(model.summary())
+print(model.summary_feature_importances(sort_by='gcv'))
 #3)预测的y
 y_hat = model.predict(X)
 
@@ -207,7 +212,23 @@ RMSE=sqrt(metrics.mean_squared_error(y.reshape(-1,1), y_hat.reshape(-1,1)))
 print 'R2',R_square
 print'RMSE',RMSE
 
-
+#特征重要性
+importances=model.feature_importances_
+idx=1
+fig2=pyplot.figure(figsize=(6,6))
+pyplot.rc('font',family='Times New Roman') 
+labels=['$x{}$'.format(i) for i in range(10)]#下标
+for crit in criteria:
+    pyplot.subplot(2,2,idx)
+    pyplot.bar(numpy.arange(10),importances[crit],align='center',color='blue')
+    pyplot.xticks(numpy.arange(len(labels)),labels)
+    pyplot.title(crit)
+    pyplot.ylabel('importance')
+    idx+=1
+title='The importance of Features'
+fig2.suptitle(title,fontsize='x-large')
+pyplot.subplots_adjust(wspace =0.3, hspace =0.2)#调整子图间距
+pyplot.show()
 #地面检测和预测值的线性拟合，注意是y与y_hat的拟合,评价模拟效果
 model_line= linear_model.LinearRegression()
 model_line.fit(y.reshape(-1,1), y_hat.reshape(-1,1))
@@ -216,12 +237,13 @@ y_predict_hat = model_line.predict(y.reshape(-1,1))
 
 #绘图
 pyplot.figure(figsize=(8,6))
-pyplot.plot(y.reshape(-1,1), y_hat.reshape(-1,1),'b.',label='Matching Points')
-pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'r-',label='Fitted curve',linewidth=0.6)
-pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.6)
+pyplot.rc('font',family='Times New Roman') 
+pyplot.scatter(y.reshape(-1,1), y_hat.reshape(-1,1),s=25,c='',marker='.',label='Matching Points',edgecolor='r',linewidths=0.5)
+pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'b-',label='Fitted curve',linewidth=0.6)
+pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.5)
 pyplot.legend(loc=2) #指定legend的位置右下角
-pyplot.annotate("$R^2$=%.3f"%R_square,(700,100))
-pyplot.annotate("RMSE=%.3f$\mu{g/}{m}^{3}$"%RMSE,(700,50))
+pyplot.annotate("R$\mathrm{^2}$=%.2f"%R_square,(800,100))
+pyplot.annotate("RMSE=%.2f"%RMSE,(800,50))
 
 #设置坐标轴刻度
 my_x_ticks = numpy.arange(0,1100,100)
@@ -247,7 +269,7 @@ R2_SUM_2=0
 #n_2=0
 for train_2, test_2 in ss.split(X,y):
     #n_2+=1
-    X_train_2, X_test_2, y_train_2, y_test_2 = standar_scale(X[train_2]), standar_scale(X[test_2]), y[train_2], y[test_2]
+    X_train_2, X_test_2, y_train_2, y_test_2 = X[train_2], X[test_2], y[train_2], y[test_2]
     model.fit(X_train_2,y_train_2.reshape(-1,1))
     y_test_hat_2=model.predict(X_test_2)
     rmse_1=sqrt(metrics.mean_squared_error(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1)))
