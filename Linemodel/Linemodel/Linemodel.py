@@ -109,7 +109,7 @@ print all_x.shape
 #X=numpy.delete(X, 0, axis=1)
 #X=numpy.delete(X, 1, axis=1)
 X=all_x[:,2:]
-standar_scaler=preprocessing.StandardScaler()
+standar_scaler=preprocessing.MinMaxScaler()
 X_standarscale= standar_scaler.fit_transform(X)
 X=X_standarscale
 #X=standar_scale(X)

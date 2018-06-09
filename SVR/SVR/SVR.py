@@ -123,7 +123,7 @@ X=all_x[:,2:]
 print X.shape
 #print X
 #X=standar_scale(X)
-standar_scaler=preprocessing.StandardScaler()
+standar_scaler=preprocessing.MinMaxScaler()
 X_standarscale= standar_scaler.fit_transform(X)
 X=X_standarscale
 print X.mean(axis=0)#列
@@ -133,10 +133,16 @@ y=pm
 print y.shape
 print y
 ###########################################################
-#from sklearn.model_selection import GridSearchCV
-#SVR拟合
-model=SVR(C=200,epsilon=0.01,gamma=0.2,kernel='rbf')
+from sklearn.model_selection import GridSearchCV
+parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10,100,1000,5000,10000],'epsilon':[0.0001,0.001,0.01,0.1,0.5,1,10],'gamma':[0.0001,0.001,0.01,0.1,1,10]}
+score=['r2','neg_mean_squared_error']
+model=SVR(C=1000,epsilon=0.0001,gamma=0.5,kernel='rbf')
+#model.fit(X,y)
+model=GridSearchCV(SVR(), parameters,cv=10)
 model.fit(X,y)
+print model.best_params_
+print model.best_score_
+
 y_hat=model.predict(X)
 
 #基本评价指标

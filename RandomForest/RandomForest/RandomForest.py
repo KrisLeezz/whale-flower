@@ -75,7 +75,7 @@ co=[]
 o3=[]
 date=[]
 all_x=[]
-csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_winter.csv')
+csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_2015.csv')
 csv_read=csv.reader(csv_file_read)
 
 for row in csv_read:
@@ -117,8 +117,9 @@ print all_x[0]
 
 
 X=all_x[:,2:]
-print X[0]
-#X=standar_scale(X)
+standar_scaler=preprocessing.MinMaxScaler()
+X_standarscale= standar_scaler.fit_transform(X)
+X=X_standarscale
 print X.mean(axis=0)#列
 print X.std(axis=0)
 

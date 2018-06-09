@@ -167,7 +167,7 @@ print all_x.shape
 X=all_x[:,2:]
 print X.shape
 #X=standar_scale(X)
-standar_scaler=preprocessing.StandardScaler()
+standar_scaler=preprocessing.MinMaxScaler()
 X_standarscale= standar_scaler.fit_transform(X)
 X=X_standarscale
 print X.mean(axis=0)#列
