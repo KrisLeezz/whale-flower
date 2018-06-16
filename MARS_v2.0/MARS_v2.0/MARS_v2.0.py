@@ -167,7 +167,7 @@ print all_x.shape
 X=all_x[:,2:]
 print X.shape
 #X=standar_scale(X)
-standar_scaler=preprocessing.MinMaxScaler()
+standar_scaler=preprocessing.StandardScaler()
 X_standarscale= standar_scaler.fit_transform(X)
 X=X_standarscale
 print X.mean(axis=0)#列
@@ -199,10 +199,12 @@ criteria=('rss','gcv','nb_subsets')
 model = Earth(max_degree=2,feature_importance_type=criteria)
 model.fit(X,y) #这里用的是标准化之后的数据
 #2)Print the model模型结果
+
 print(model.trace())
 print(model.summary())
 print(model.summary_feature_importances(sort_by='gcv'))
 #3)预测的y
+
 y_hat = model.predict(X)
 
 #评价指标
@@ -212,74 +214,89 @@ RMSE=sqrt(metrics.mean_squared_error(y.reshape(-1,1), y_hat.reshape(-1,1)))
 print 'R2',R_square
 print'RMSE',RMSE
 
-#特征重要性
-importances=model.feature_importances_
-idx=1
-fig2=pyplot.figure(figsize=(6,6))
+csv_file=open("error",'wb')
+csv_write=csv.writer(csv_file)
+csv_write.writerows(y_hat.reshape(-1,1)-y.reshape(-1,1))
+csv_file.close()
+
+#残差图
+#pyplot.figure(figsize=(8,6))
 pyplot.rc('font',family='Times New Roman') 
-labels=['$x{}$'.format(i) for i in range(10)]#下标
-for crit in criteria:
-    pyplot.subplot(2,2,idx)
-    pyplot.bar(numpy.arange(10),importances[crit],align='center',color='blue')
-    pyplot.xticks(numpy.arange(len(labels)),labels)
-    pyplot.title(crit)
-    pyplot.ylabel('importance')
-    idx+=1
-title='The importance of Features'
-fig2.suptitle(title,fontsize='x-large')
-pyplot.subplots_adjust(wspace =0.3, hspace =0.2)#调整子图间距
-pyplot.show()
-#地面检测和预测值的线性拟合，注意是y与y_hat的拟合,评价模拟效果
-model_line= linear_model.LinearRegression()
-model_line.fit(y.reshape(-1,1), y_hat.reshape(-1,1))
-a, b = model_line.coef_, model_line.intercept_#斜率，截距
-y_predict_hat = model_line.predict(y.reshape(-1,1))
-
-#绘图
-pyplot.figure(figsize=(8,6))
-pyplot.rc('font',family='Times New Roman') 
-pyplot.scatter(y.reshape(-1,1), y_hat.reshape(-1,1),s=25,c='',marker='.',label='Matching Points',edgecolor='r',linewidths=0.5)
-pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'b-',label='Fitted curve',linewidth=0.6)
-pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.5)
-pyplot.legend(loc=2) #指定legend的位置右下角
-pyplot.annotate("R$\mathrm{^2}$=%.2f"%R_square,(800,100))
-pyplot.annotate("RMSE=%.2f"%RMSE,(800,50))
-
-#设置坐标轴刻度
-my_x_ticks = numpy.arange(0,1100,100)
-my_y_ticks = numpy.arange(0,1100,100)
-pyplot.xticks(my_x_ticks)
-pyplot.yticks(my_y_ticks)
-pyplot.xlim(0,1000)
-pyplot.ylim(0,1000)
-
-pyplot.xlabel('Observed PM2.5($\mu{g/}{m}^{3}$)')
-pyplot.ylabel('Predicted PM2.5($\mu{g/}{m}^{3}$)')
+pyplot.scatter(y_hat.reshape(-1,1),y_hat.reshape(-1,1)-y.reshape(-1,1),s=25,c='',marker='.',edgecolor='r',linewidths=0.5)
+pyplot.axhline(y = 0, color = 'r', linewidth = 1)
 pyplot.title('MARS')
-pyplot.show()
+pyplot.xlabel("prediction")  
+pyplot.ylabel("residual error")  
+pyplot.show()  
 
-print '********************************The next is validation***************************'
+##特征重要性
+#importances=model.feature_importances_
+#idx=1
+#fig2=pyplot.figure(figsize=(6,6))
+#pyplot.rc('font',family='Times New Roman') 
+#labels=['$x{}$'.format(i) for i in range(10)]#下标
+#for crit in criteria:
+#    pyplot.subplot(2,2,idx)
+#    pyplot.bar(numpy.arange(10),importances[crit],align='center',color='blue')
+#    pyplot.xticks(numpy.arange(len(labels)),labels)
+#    pyplot.title(crit)
+#    pyplot.ylabel('importance')
+#    idx+=1
+#title='The importance of Features'
+#fig2.suptitle(title,fontsize='x-large')
+#pyplot.subplots_adjust(wspace =0.3, hspace =0.2)#调整子图间距
+#pyplot.show()
+##地面检测和预测值的线性拟合，注意是y与y_hat的拟合,评价模拟效果
+#model_line= linear_model.LinearRegression()
+#model_line.fit(y.reshape(-1,1), y_hat.reshape(-1,1))
+#a, b = model_line.coef_, model_line.intercept_#斜率，截距
+#y_predict_hat = model_line.predict(y.reshape(-1,1))
 
-#ShuffleSplit交叉验证,分割次数也是10次
-from sklearn.model_selection import ShuffleSplit
-k_2=10
-ss = ShuffleSplit(n_splits=k_2, test_size=0.25,random_state=0)
-TotalRMSE_2=0
-R2_SUM_2=0
-#n_2=0
-for train_2, test_2 in ss.split(X,y):
-    #n_2+=1
-    X_train_2, X_test_2, y_train_2, y_test_2 = X[train_2], X[test_2], y[train_2], y[test_2]
-    model.fit(X_train_2,y_train_2.reshape(-1,1))
-    y_test_hat_2=model.predict(X_test_2)
-    rmse_1=sqrt(metrics.mean_squared_error(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1)))
-    print rmse_1
-    TotalRMSE_2+=rmse_1
-    r_1=metrics.r2_score(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1))
-    print r_1
-    R2_SUM_2+=r_1
-    #print R2_SUM_2
-print 'The second is Shufflesplit,splits=%d'%k_2  
-print 'shufflesplit MSE:',TotalRMSE_2/k_2
-print 'shufflesplit R2:',R2_SUM_2/k_2
+##绘图
+#pyplot.figure(figsize=(8,6))
+#pyplot.rc('font',family='Times New Roman') 
+#pyplot.scatter(y.reshape(-1,1), y_hat.reshape(-1,1),s=25,c='',marker='.',label='Matching Points',edgecolor='r',linewidths=0.5)
+#pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'b-',label='Fitted curve',linewidth=0.6)
+#pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.5)
+#pyplot.legend(loc=2) #指定legend的位置右下角
+#pyplot.annotate("R$\mathrm{^2}$=%.2f"%R_square,(800,100))
+#pyplot.annotate("RMSE=%.2f"%RMSE,(800,50))
+
+##设置坐标轴刻度
+#my_x_ticks = numpy.arange(0,1100,100)
+#my_y_ticks = numpy.arange(0,1100,100)
+#pyplot.xticks(my_x_ticks)
+#pyplot.yticks(my_y_ticks)
+#pyplot.xlim(0,1000)
+#pyplot.ylim(0,1000)
+
+#pyplot.xlabel('Observed PM2.5($\mu{g/}{m}^{3}$)')
+#pyplot.ylabel('Predicted PM2.5($\mu{g/}{m}^{3}$)')
+#pyplot.title('MARS')
+#pyplot.show()
+
+#print '********************************The next is validation***************************'
+
+##ShuffleSplit交叉验证,分割次数也是10次
+#from sklearn.model_selection import ShuffleSplit
+#k_2=10
+#ss = ShuffleSplit(n_splits=k_2, test_size=0.25,random_state=0)
+#TotalRMSE_2=0
+#R2_SUM_2=0
+##n_2=0
+#for train_2, test_2 in ss.split(X,y):
+#    #n_2+=1
+#    X_train_2, X_test_2, y_train_2, y_test_2 = X[train_2], X[test_2], y[train_2], y[test_2]
+#    model.fit(X_train_2,y_train_2.reshape(-1,1))
+#    y_test_hat_2=model.predict(X_test_2)
+#    rmse_1=sqrt(metrics.mean_squared_error(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1)))
+#    print rmse_1
+#    TotalRMSE_2+=rmse_1
+#    r_1=metrics.r2_score(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1))
+#    print r_1
+#    R2_SUM_2+=r_1
+#    #print R2_SUM_2
+#print 'The second is Shufflesplit,splits=%d'%k_2  
+#print 'shufflesplit MSE:',TotalRMSE_2/k_2
+#print 'shufflesplit R2:',R2_SUM_2/k_2
 
