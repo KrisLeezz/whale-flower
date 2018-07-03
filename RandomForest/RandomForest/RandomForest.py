@@ -117,9 +117,9 @@ print all_x[0]
 
 
 X=all_x[:,2:]
-#standar_scaler=preprocessing.StandardScaler()
-#X_standarscale= standar_scaler.fit_transform(X)
-#X=X_standarscale
+standar_scaler=preprocessing.StandardScaler()
+X_standarscale= standar_scaler.fit_transform(X)
+X=X_standarscale
 print X.mean(axis=0)#列
 print X.std(axis=0)
 
