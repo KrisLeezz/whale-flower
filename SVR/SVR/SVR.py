@@ -3,8 +3,9 @@ import csv
 import numpy
 from array import array
 from matplotlib import pyplot
-from sklearn.svm import SVR
 from sklearn import linear_model
+from sklearn.svm import SVR
+
 from sklearn import metrics
 from math import sqrt
 from sklearn import preprocessing
@@ -70,7 +71,7 @@ co=[]
 o3=[]
 date=[]
 all_x=[]
-csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_2015_2017.csv')
+csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_summar.csv')
 csv_read=csv.reader(csv_file_read)
 
 for row in csv_read:

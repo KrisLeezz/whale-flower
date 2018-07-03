@@ -75,7 +75,7 @@ co=[]
 o3=[]
 date=[]
 all_x=[]
-csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_winter.csv')
+csv_file_read=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/new_2015_2017.csv')
 csv_read=csv.reader(csv_file_read)
 
 for row in csv_read:
@@ -117,9 +117,9 @@ print all_x[0]
 
 
 X=all_x[:,2:]
-standar_scaler=preprocessing.StandardScaler()
-X_standarscale= standar_scaler.fit_transform(X)
-X=X_standarscale
+#standar_scaler=preprocessing.StandardScaler()
+#X_standarscale= standar_scaler.fit_transform(X)
+#X=X_standarscale
 print X.mean(axis=0)#列
 print X.std(axis=0)
 
@@ -129,7 +129,7 @@ print y.shape
 ###########################################################
 #parameter={'min_samples_split':[2,10,100,500],'min_samples_leaf':[2,10,20,50]}
 #SVR拟合
-model=RandomForestRegressor(n_estimators=500,min_samples_split=20,max_features=0.7)
+model=RandomForestRegressor(n_estimators=500,min_samples_split=20)
 #model=GridSearchCV(RF,parameter,scoring='r2')
 model.fit(X,y)
 #print model.estimators_
@@ -140,10 +140,10 @@ print model.n_outputs_
 
 
 y_hat=model.predict(X)
-#csv_file=open('result.csv','wb')
-#csv_write=csv.writer(csv_file)
-#csv_write.writerows(y_hat.reshape(-1,1))
-#csv_file.close()
+csv_file=open('result.csv','wb')
+csv_write=csv.writer(csv_file)
+csv_write.writerows(y_hat.reshape(-1,1))
+csv_file.close()
 
 
 #评价指标
@@ -161,9 +161,9 @@ model_line.fit(y.reshape(-1,1), y_hat.reshape(-1,1))
 a, b = model_line.coef_, model_line.intercept_#斜率，截距
 y_predict_hat = model_line.predict(y.reshape(-1,1))
 
-#file = open("rfmodel.pickle", "wb")
-#pickle.dump(model, file)
-#file.close()
+file = open("rfmodel.pickle", "wb")
+pickle.dump(model, file)
+file.close()
 
 #特征重要性
 importances=model.feature_importances_
@@ -221,9 +221,9 @@ ss = ShuffleSplit(n_splits=k_2, test_size=0.25,random_state=0)
 TotalRMSE_2=0
 R2_SUM_2=0
 #n_2=0
-csv_file1=open("train_error.csv",'ab')
+csv_file1=open("winter_train_error.csv",'ab')
 csv_write1=csv.writer(csv_file1)
-csv_file2=open("test_error.csv",'ab')
+csv_file2=open("winter_test_error.csv",'ab')
 csv_write2=csv.writer(csv_file2)
 
 for train_2, test_2 in ss.split(X,y):
