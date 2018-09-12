@@ -1,4 +1,4 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import csv
 import numpy
 from array import array
@@ -117,9 +117,11 @@ print all_x[0]
 
 
 X=all_x[:,2:]
-standar_scaler=preprocessing.StandardScaler()
-X_standarscale= standar_scaler.fit_transform(X)
-X=X_standarscale
+#X= numpy.delete(X, 1, axis=1)
+print X[0]
+#standar_scaler=preprocessing.StandardScaler()
+#X_standarscale= standar_scaler.fit_transform(X)
+#X=X_standarscale
 print X.mean(axis=0)#列
 print X.std(axis=0)
 
@@ -129,7 +131,7 @@ print y.shape
 ###########################################################
 #parameter={'min_samples_split':[2,10,100,500],'min_samples_leaf':[2,10,20,50]}
 #SVR拟合
-model=RandomForestRegressor(n_estimators=500,min_samples_split=20)
+model=RandomForestRegressor(n_estimators=500,min_samples_split=20,max_features=0.8)
 #model=GridSearchCV(RF,parameter,scoring='r2')
 model.fit(X,y)
 #print model.estimators_
@@ -140,10 +142,10 @@ print model.n_outputs_
 
 
 y_hat=model.predict(X)
-csv_file=open('result.csv','wb')
-csv_write=csv.writer(csv_file)
-csv_write.writerows(y_hat.reshape(-1,1))
-csv_file.close()
+#csv_file=open('result.csv','wb')
+#csv_write=csv.writer(csv_file)
+#csv_write.writerows(y_hat.reshape(-1,1))
+#csv_file.close()
 
 
 #评价指标
@@ -161,16 +163,16 @@ model_line.fit(y.reshape(-1,1), y_hat.reshape(-1,1))
 a, b = model_line.coef_, model_line.intercept_#斜率，截距
 y_predict_hat = model_line.predict(y.reshape(-1,1))
 
-file = open("rfmodel.pickle", "wb")
-pickle.dump(model, file)
-file.close()
+#file = open("rfmodel.pickle", "wb")
+#pickle.dump(model, file)
+#file.close()
 
 #特征重要性
 importances=model.feature_importances_
 fig2=pyplot.figure(figsize=(6,6))
 pyplot.rc('font',family='Times New Roman') 
 labels=['$x{}$'.format(i) for i in range(10)]#下标
-pyplot.bar(numpy.arange(10),importances,align='center',color='red')
+pyplot.bar(numpy.arange(9),importances,align='center',color='red')
 pyplot.xticks(numpy.arange(len(labels)),labels)
 pyplot.title('RF')
 pyplot.ylabel('importance')
@@ -221,10 +223,10 @@ ss = ShuffleSplit(n_splits=k_2, test_size=0.25,random_state=0)
 TotalRMSE_2=0
 R2_SUM_2=0
 #n_2=0
-csv_file1=open("winter_train_error.csv",'ab')
-csv_write1=csv.writer(csv_file1)
-csv_file2=open("winter_test_error.csv",'ab')
-csv_write2=csv.writer(csv_file2)
+#csv_file1=open("winter_train_error.csv",'ab')
+#csv_write1=csv.writer(csv_file1)
+#csv_file2=open("winter_test_error.csv",'ab')
+#csv_write2=csv.writer(csv_file2)
 
 for train_2, test_2 in ss.split(X,y):
     #n_2+=1
@@ -233,8 +235,8 @@ for train_2, test_2 in ss.split(X,y):
     model.fit(X_train_2,y_train_2)
     y_train_hat_2=model.predict(X_train_2)
     y_test_hat_2=model.predict(X_test_2)
-    csv_write1.writerows(y_train_hat_2.reshape(-1,1)-y_train_2.reshape(-1,1))
-    csv_write2.writerows(y_test_hat_2.reshape(-1,1)-y_test_2.reshape(-1,1))
+    #csv_write1.writerows(y_train_hat_2.reshape(-1,1)-y_train_2.reshape(-1,1))
+    #csv_write2.writerows(y_test_hat_2.reshape(-1,1)-y_test_2.reshape(-1,1))
     rmse_1=sqrt(metrics.mean_squared_error(y_test_2.reshape(-1,1),y_test_hat_2.reshape(-1,1)))
     print rmse_1
     TotalRMSE_2+=rmse_1
