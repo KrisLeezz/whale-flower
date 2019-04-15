@@ -220,13 +220,15 @@ csv_write.writerows(y_hat.reshape(-1,1)-y.reshape(-1,1))
 csv_file.close()
 
 #残差图
-#pyplot.figure(figsize=(8,6))
+pyplot.figure(figsize=(8,6))
 pyplot.rc('font',family='Times New Roman') 
-pyplot.scatter(y_hat.reshape(-1,1),y_hat.reshape(-1,1)-y.reshape(-1,1),s=25,c='',marker='.',edgecolor='r',linewidths=0.5)
+pyplot.scatter(y_hat.reshape(-1,1),y_hat.reshape(-1,1)-y.reshape(-1,1),s=30,c='',marker='.',edgecolor='r',linewidths=0.5)
 pyplot.axhline(y = 0, color = 'r', linewidth = 1)
-pyplot.title('MARS')
-pyplot.xlabel("prediction")  
-pyplot.ylabel("residual error")  
+pyplot.xticks(fontsize=15)
+pyplot.yticks(fontsize=15)
+pyplot.title('MARS',fontsize=25)
+pyplot.xlabel("Predicted PM$_{2.5}$($\mathrm{\mu{g/}{m}^{3}}$)",fontsize=20)  
+pyplot.ylabel("Residual Error($\mathrm{\mu{g/}{m}^{3}}$)",fontsize=20)  
 pyplot.show()  
 
 ##特征重要性
@@ -246,34 +248,34 @@ pyplot.show()
 #fig2.suptitle(title,fontsize='x-large')
 #pyplot.subplots_adjust(wspace =0.3, hspace =0.2)#调整子图间距
 #pyplot.show()
-##地面检测和预测值的线性拟合，注意是y与y_hat的拟合,评价模拟效果
-#model_line= linear_model.LinearRegression()
-#model_line.fit(y.reshape(-1,1), y_hat.reshape(-1,1))
-#a, b = model_line.coef_, model_line.intercept_#斜率，截距
-#y_predict_hat = model_line.predict(y.reshape(-1,1))
+#地面检测和预测值的线性拟合，注意是y与y_hat的拟合,评价模拟效果
+model_line= linear_model.LinearRegression()
+model_line.fit(y.reshape(-1,1), y_hat.reshape(-1,1))
+a, b = model_line.coef_, model_line.intercept_#斜率，截距
+y_predict_hat = model_line.predict(y.reshape(-1,1))
 
-##绘图
-#pyplot.figure(figsize=(8,6))
-#pyplot.rc('font',family='Times New Roman') 
-#pyplot.scatter(y.reshape(-1,1), y_hat.reshape(-1,1),s=25,c='',marker='.',label='Matching Points',edgecolor='r',linewidths=0.5)
-#pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'b-',label='Fitted curve',linewidth=0.6)
-#pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=0.5)
-#pyplot.legend(loc=2) #指定legend的位置右下角
-#pyplot.annotate("R$\mathrm{^2}$=%.2f"%R_square,(800,100))
-#pyplot.annotate("RMSE=%.2f"%RMSE,(800,50))
+#绘图
+pyplot.figure(figsize=(8,6))
+pyplot.rc('font',family='Times New Roman') 
+pyplot.scatter(y.reshape(-1,1), y_hat.reshape(-1,1),s=25,c='',marker='.',label='Matching Points',edgecolor='r',linewidths=0.5)
+pyplot.plot(y.reshape(-1,1),y_predict_hat.reshape(-1,1),'b-',label='Fitted curve',linewidth=0.6)
+pyplot.plot((0,1100),(0,1100),'k--',label='1:1',linewidth=1)
+pyplot.legend(loc=2,fontsize=15) #指定legend的位置右下角
+pyplot.annotate("R$\mathrm{^2}$=%.2f"%R_square,(700,100),fontsize=15)
+pyplot.annotate("RMSE=%.2f"%RMSE,(700,50),fontsize=15)
 
-##设置坐标轴刻度
-#my_x_ticks = numpy.arange(0,1100,100)
-#my_y_ticks = numpy.arange(0,1100,100)
-#pyplot.xticks(my_x_ticks)
-#pyplot.yticks(my_y_ticks)
-#pyplot.xlim(0,1000)
-#pyplot.ylim(0,1000)
+#设置坐标轴刻度
+my_x_ticks = numpy.arange(0,1100,100)
+my_y_ticks = numpy.arange(0,1100,100)
+pyplot.xticks(my_x_ticks,fontsize=15)
+pyplot.yticks(my_y_ticks,fontsize=15)
+pyplot.xlim(0,1000)
+pyplot.ylim(0,1000)
 
-#pyplot.xlabel('Observed PM2.5($\mu{g/}{m}^{3}$)')
-#pyplot.ylabel('Predicted PM2.5($\mu{g/}{m}^{3}$)')
-#pyplot.title('MARS')
-#pyplot.show()
+pyplot.xlabel('Observed PM$_{2.5}$($\mathrm{\mu{g/}{m}^{3}}$)',fontsize=20)
+pyplot.ylabel('Predicted PM$_{2.5}$($\mathrm{\mu{g/}{m}^{3}}$)',fontsize=20)
+pyplot.title('MARS',fontsize=25)
+pyplot.show()
 
 #print '********************************The next is validation***************************'
 

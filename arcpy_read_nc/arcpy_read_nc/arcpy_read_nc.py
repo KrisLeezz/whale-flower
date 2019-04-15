@@ -1,7 +1,8 @@
+#-*- coding=utf-8 -*-
 import arcpy
 import csv
 import numpy
-csv_file=open('G:/Arcgis/78+5.csv')
+csv_file=open('G:\downscaling\china_america_meterology\data_daily_summary\usa_5_station\position_5.csv','r')
 csv_read=csv.reader(csv_file)
 #data=[row for row in csv_read]
 id=[]
@@ -10,15 +11,16 @@ lat=[]
 for row in csv_read:
     if row[0]!='id':
         id.append(row[0])
-        lon.append(row[-2])
-        lat.append(row[-1])
+        lat.append(row[-2])
+        lon.append(row[-1])
 lon=numpy.array(lon)
 lat=numpy.array(lat)
 for i in range(0,len(lon)):
-    LON=float(lon[i])
+    LON=float(lon[i])+360
     LAT=float(lat[i])
     print 'lat=%f,lon=%f'%(LAT,LON)
     print 'site%s'%id[i]
+	#这种方式取点按照先谁取谁的原则
     arcpy.MakeNetCDFTableView_md(\
-        'G:/NCEP/airtemperature/air.2m.gauss.2015.nc','rhum','air_2m_gauss_2015_nc_%s'%id[i],"time","lat=%f,lon=%f"%(LAT,LON),"BY_VALUE")
-    arcpy.CopyRows_management('air_2m_gauss_2015_nc_%s'%id[i], "G:/TABLE/TABLE.gdb/air_2m_gauss_2015_nc_%s"%id[i])
+        'G:\downscaling\GCMs\pr_day_bcc-csm1-1_historical_r1i1p1_18500101-20121230.nc','pr','bbc_pr_%s'%id[i],"time","lon %f;lat %f"%(LON,LAT),"BY_VALUE")
+    arcpy.CopyRows_management('bbc_pr_%s'%id[i], "G:\downscaling\GCMs\pr\\bbc_pr_%s.csv"%id[i])

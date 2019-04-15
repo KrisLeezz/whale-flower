@@ -1,3 +1,4 @@
+#-*-coding=utf-8 -*-
 import netCDF4
 import datetime
 from netCDF4 import Dataset
@@ -6,14 +7,13 @@ from matplotlib import pyplot
 import numpy 
 from mpl_toolkits.basemap import Basemap
 import csv
-ncdata=Dataset('pres.sfc.2014.nc','r')
-#ncdata=Dataset('air.sig995.2012.nc','r')
+ncdata=Dataset('G:\downscaling\GCMs\pr_day_bcc-csm1-1_historical_r1i1p1_18500101-20121230.nc','r')
+print ncdata.variables.keys
 time=ncdata.variables['time'][:]#366天
 lons=ncdata.variables['lon'][:]
 lats=ncdata.variables['lat'][:]
-rhum=ncdata.variables['pres'][:]
-rhum_units=ncdata.variables['pres'].units
-#print ncdata.variables.keys
+rhum=ncdata.variables['pr'][0:10000]
+rhum_units=ncdata.variables['pr'].units
 
 #转化nc文件时间的算法
 dates=num2date(ncdata.variables['time'][:],ncdata.variables['time'].units)
@@ -37,9 +37,9 @@ xi, yi = m(lon, lat)
 
 
 #取得每天6：00全球rhum
-for i in range (0,len(time)):
+for i in range (0,10000):
     if i%4==1:
-        rhum_0 = rhum[i,::, ::]#对应的变量是时间，纬度，经度的函数
+        rhum_0 = rhum[999,::, ::]#对应的变量是时间，纬度，经度的函数
         print dates[i]
         
 print rhum.shape
@@ -75,7 +75,7 @@ pyplot.title('%s Surface humidity'%date)
 #GC_LON,GC_LAT=116.225,39.9279
 #TT_LON,TT_LAT=116.434,39.8745
 #WSXG_LON,WSXG_LAT=116.366,39.8673
-csv_file=open('G:/PM_vs_AOS_SO2_NO2_CO_O3/lon_lat_78.csv')
+csv_file=open('G:\downscaling\china_america_meterology\data_daily_summary\usa_5_station\position_5.csv','r')
 csv_read=csv.reader(csv_file)
 
 date=[row for row in csv_read]
@@ -85,13 +85,13 @@ LONS=[]
 LATS=[]
 site=[]
 for row in date:
-    if row[0]!='id':
-        LONS.append(row[1])
-        LATS.append(row[2])
+    if row[0]!='Station':
+        LONS.append(row[2])
+        LATS.append(row[1])
         site.append(row[0])
 LONS=numpy.array(LONS)
 LATS=numpy.array(LATS)
-LONS=LONS.astype('float')
+LONS=LONS.astype('float')+360
 LATS=LATS.astype('float')
 #LON,LAT=numpy.meshgrid(LONS,LATS)
 
